@@ -10,10 +10,10 @@ import (
 // var redisClient *redis.Client
 type Ad struct {
 	// ID         int         `json:"id"`
-	Title      string    `json:"title"`
-	StartAt    time.Time `json:"startAt"`
-	EndAt      time.Time `json:"endAt"`
-	Conditions Condition `json:"conditions"`
+	Title      string      `json:"title"`
+	StartAt    time.Time   `json:"startAt"`
+	EndAt      time.Time   `json:"endAt"`
+	Conditions []Condition `json:"conditions"`
 }
 
 // Condition data structure

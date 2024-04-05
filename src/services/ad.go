@@ -41,9 +41,10 @@ func CreateAd(c *gin.Context) {
 	// Save ad to database (replace with your actual logic)
 	// ...
 	controllers.Create_ad(ad)
-	// controllers.Create_ad()
+
 	// Save conditions to database (replace with your actual logic)
 	// ...
+	// controllers.Create_condition(ad.Conditions[0], 3)
 
 	c.JSON(http.StatusCreated, ad)
 }
