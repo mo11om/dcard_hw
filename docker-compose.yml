@@ -1,0 +1,45 @@
+# version: '3'
+
+# services:
+#   # Replace with the actual image name for your database (e.g., mysql:latest)
+#   database:
+#     image: mysql:latest
+#     environment:
+#       MYSQL_DATABASE: my_database  # Replace with your desired database name
+#       MYSQL_ROOT_PASSWORD: password  # Replace with a strong password
+#       MYSQL_INITDB_SCRIPT: init.sql  # Path to the init script
+#     volumes:
+#       - database-data:/var/lib/mysql  # Persistent storage for database data
+#       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+#       # - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro  # Mount init.sql as read-only
+#     ports:
+#       - "3306:3306"  # Map host port 3306 to container port 3306 (default MySQL port)
+
+# volumes:
+#   database-data: {}  # Empty volume to persist database data
+version: "3.8"
+
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password  # Replace with your desired password (store securely)
+      MYSQL_DATABASE: data        # Replace with your desired database name
+      MYSQL_USER: dcard                 # Replace with your desired username
+      MYSQL_PASSWORD: i_love_dcard          # Replace with your desired password for the user
+    # Adjust port mapping as needed
+    ports:
+      - "3306:3306"
+    # Mount the init script as a volume (optional)
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Uncomment if using init.sql
+    # Persistent data volume (uncomment and adjust)
+
+      - db-data:/var/lib/mysql
+    restart: unless-stopped  # Restart container on failures
+
+# Replace paths with your actual file locations (if using init.sql)
+volumes:
+  # Optional volume to store persistent data (uncomment if needed)
+  db-data: {}
+  
