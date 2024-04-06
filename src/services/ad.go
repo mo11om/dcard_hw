@@ -51,6 +51,7 @@ func CreateAd(c *gin.Context) {
 
 // List Ads handler
 func ListAds(c *gin.Context) {
+	//check
 	var serach_condition model.Search_Condition
 	age, err := strconv.Atoi(c.Query("age"))
 	if err != nil {
@@ -63,27 +64,36 @@ func ListAds(c *gin.Context) {
 	offset, err := strconv.Atoi(c.Query("offset"))
 	if err != nil || offset < 1 || offset > 100 {
 		offset = 5
+	} else {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "offset must be num or not in 1-100"})
+		return
 	}
 	limit, err := strconv.Atoi(c.Query("limit"))
 	if err != nil || limit < 1 || limit > 100 {
 		limit = 5
-	}
+	} else {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "limit must be num or not in 1-100"})
 
+	}
+	//fetch params into data structure
 	serach_condition.Age = age
 	serach_condition.Country = country
 	serach_condition.Gender = gender
 	serach_condition.Platform = platform
 	serach_condition.Limit = limit
 	serach_condition.Offset = offset
-	ads, err := controllers.Find_ad(serach_condition)
+
 	// Fetch ads from database based on filters, pagination, and active status (replace with your actual logic)
-	// ...
+
+	ads, err := controllers.Find_ad(serach_condition)
 	if err != nil {
 		fmt.Println(err)
 		c.AbortWithStatus(500)
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"items": ads,
+		})
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"items": ads,
-	})
+
 	// Replace "ads" with actual fetched data
 }
