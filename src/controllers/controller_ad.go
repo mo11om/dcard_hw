@@ -31,7 +31,7 @@ func Create_ad(ad model.Ad) error {
 			return err
 		}
 	} else {
-		fmt.Println(ad)
+		// fmt.Println(ad)
 		err := Db.Exec("INSERT INTO Ads (title, start_at, end_at ,min_age,max_age) VALUES (?, ?, ?,?,?)",
 			ad.Title, ad.StartAt, ad.EndAt, ad.Conditions[0].AgeStart, ad.Conditions[0].AgeEnd).Error
 		if err != nil {
@@ -94,7 +94,7 @@ func Create_condition(condition model.Condition, adId int) error {
 	// platformClause = get_clause(condition.Platform)
 	// genderClause = get_clause(condition.Gender)
 	// countryClause = get_clause(condition.Country)
-	fmt.Println(genderClause, countryClause, platformClause)
+	// fmt.Println(genderClause, countryClause, platformClause)
 	sql_query := `INSERT INTO AdConditions (ad_id, condition_id)
 		SELECT ?, c.id
 	FROM Conditions c
@@ -115,8 +115,7 @@ func Create_condition(condition model.Condition, adId int) error {
 
 	return nil
 }
-func Find_ad(condition model.Search_Condition) ([]model.Result, error) {
-
+func find_adBysql(condition model.Search_Condition) ([]model.Result, error) {
 	num_param := 0
 	params := []interface{}{} // Initial parameter
 
@@ -196,8 +195,8 @@ func Find_ad(condition model.Search_Condition) ([]model.Result, error) {
 
 	// select * from Ads;
 	// `
-	fmt.Println(sql_query)
-	fmt.Println(params...)
+	// fmt.Println(sql_query)
+	// fmt.Println(params...)
 
 	var ads []model.Result
 
@@ -207,5 +206,26 @@ func Find_ad(condition model.Search_Condition) ([]model.Result, error) {
 		return nil, err
 	}
 	return ads, err
+}
+func Find_ad(condition model.Search_Condition) ([]model.Result, error) {
+	var (
+		err error
+		ads []model.Result
+	)
+	ads, err = find_adBysql(condition)
+	if err != nil {
 
+		return nil, err
+	}
+	return getSlice(ads, condition.Limit, condition.Offset), err
+
+}
+func getSlice(data []model.Result, limit, offset int) []model.Result {
+	if limit == 0 {
+		return nil // Return empty slice for limit 0
+	}
+	start := offset
+	end := min(start+limit, len(data))
+	// fmt.Println(start, end, data[start:end])
+	return data[start:end]
 }

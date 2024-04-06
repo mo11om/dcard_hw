@@ -1,50 +1,5 @@
 package controllers
 
-// import (
-// 	"database/sql"
-// 	"errors"
-// )
-
-// // Global variable to hold the connection (optional, see considerations)
-
-// var Db *sql.DB
-
-// func Init() error {
-// 	var err error
-// 	Db, err = ConnectToMySQL()
-
-// 	return err
-
-// }
-// func ConnectToMySQL() (*sql.DB, error) {
-// 	// Replace with your actual connection details
-// 	// connectionString example: "user:password@tcp(host:port)/databaseName"
-
-// 	db, err := sql.Open("mysql", connectionString)
-// 	if err != nil {
-// 		defer db.Close()
-// 		return nil, err
-
-// 	}
-
-// 	err = db.Ping()
-// 	if err != nil {
-// 		defer db.Close()
-
-// 		return nil, err
-// 	}
-
-// 	return db, nil
-// }
-
-// func IsConnectionValid(db *sql.DB) error {
-// 	// Optional: Add a function to check if the connection is still valid (e.g., ping)
-// 	err := db.Ping()
-// 	if err != nil {
-// 		return errors.New("database connection lost")
-// 	}
-// 	return nil
-// }
 import (
 	_ "os"
 
