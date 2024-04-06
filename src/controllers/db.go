@@ -11,12 +11,12 @@ var Db *gorm.DB
 var Err error
 var connectionString string = "root:password@tcp(localhost:3306)/data?charset=utf8mb4&parseTime=True"
 
-func DBconnect() {
+func DBconnect() error {
 	// 参考 https://github.com/go-sql-driver/mysql#dsn-data-source-name 获取详情
 	// dsn := os.Getenv("DB")
 	Db, Err = gorm.Open(mysql.Open(connectionString), &gorm.Config{})
 	if Err != nil {
-		panic(Err)
+		return Err
 	}
-
+	return nil
 }

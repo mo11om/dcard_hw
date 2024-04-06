@@ -10,7 +10,7 @@ import (
 
 var redisClient *Client
 
-func Init_redis() {
+func Init_redis() error {
 	cfg := &Config{
 		Addr:     "localhost:6379",
 		Password: "",
@@ -19,9 +19,10 @@ func Init_redis() {
 	var err error
 	redisClient, err = NewClient(cfg)
 	if err != nil {
-		panic(err) // Handle error more gracefully in production
+		return err // Handle error more gracefully in production
 	}
 	fmt.Println("redis conn success")
+	return nil
 }
 
 // Database connection (replace with your actual connection logic)

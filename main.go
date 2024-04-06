@@ -8,7 +8,18 @@ import (
 )
 
 func main() {
-
+	err := controllers.DBconnect()
+	if err != nil {
+		panic(err) // Handle error more gracefully in production
+	}
+	err = controllers.Init_redis()
+	if err != nil {
+		panic(err) // Handle error more gracefully in production
+	}
+	go func() {
+		controllers.DBconnect()
+		controllers.Init_redis()
+	}()
 	router := gin.Default()
 
 	// Admin API - Create Ad
@@ -16,10 +27,7 @@ func main() {
 	router.POST("api/v1/ad", service.CreateAd)
 
 	// // Public API - List Ads
-	go func() {
-		controllers.DBconnect()
-		controllers.Init_redis()
-	}()
+
 	router.GET("api/v1/ad", service.ListAds)
 
 	router.Run(":8080")
