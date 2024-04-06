@@ -1,7 +1,7 @@
 package main
 
 import (
-	database "api/src/controllers"
+	controllers "api/src/controllers"
 	service "api/src/services"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,8 @@ func main() {
 
 	// // Public API - List Ads
 	go func() {
-		database.DBconnect()
+		controllers.DBconnect()
+		controllers.Init_redis()
 	}()
 	router.GET("api/v1/ad", service.ListAds)
 
