@@ -37,7 +37,10 @@ services:
 
       - db-data:/var/lib/mysql
     restart: unless-stopped  # Restart container on failures
-
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
 # Replace paths with your actual file locations (if using init.sql)
 volumes:
   # Optional volume to store persistent data (uncomment if needed)
