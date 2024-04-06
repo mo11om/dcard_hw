@@ -2,9 +2,27 @@ package controllers
 
 import (
 	"api/src/model"
+	"context"
+	"encoding/json"
 	"fmt"
 	"sync"
 )
+
+var redisClient *Client
+
+func Init_redis() {
+	cfg := &Config{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	}
+	var err error
+	redisClient, err = NewClient(cfg)
+	if err != nil {
+		panic(err) // Handle error more gracefully in production
+	}
+	fmt.Println("redis conn success")
+}
 
 // Database connection (replace with your actual connection logic)
 // var db *sql.DB
@@ -23,6 +41,7 @@ func Create_ad(ad model.Ad) error {
 			fmt.Println("success")
 
 			tx.Commit() // Commit if everything succeeds
+			flushAllAdsCache()
 		}
 	}()
 	if ad.Conditions[0].AgeEnd == 0 || ad.Conditions[0].AgeStart == 0 {
@@ -52,6 +71,13 @@ func Create_ad(ad model.Ad) error {
 	// fmt.Println("add_ad")
 	return nil
 
+}
+func flushAllAdsCache() error {
+
+	// Implement logic to connect to Redis and flush the cache (e.g., using FlushAll)
+	// Consider alternative cache invalidation strategies for better performance
+
+	return redisClient.FlushAll(context.Background()) // Consider setting a suitable expiration time // Replace with actual implementation
 }
 
 func get_clause(data []string) string {
@@ -115,7 +141,9 @@ func Create_condition(condition model.Condition, adId int) error {
 
 	return nil
 }
+
 func find_adBysql(condition model.Search_Condition) ([]model.Result, error) {
+
 	num_param := 0
 	params := []interface{}{} // Initial parameter
 
@@ -205,18 +233,96 @@ func find_adBysql(condition model.Search_Condition) ([]model.Result, error) {
 
 		return nil, err
 	}
+	err = redisSetAd(getSearchString(condition), ads)
+	if err != nil {
+		fmt.Println("cache fail")
+	}
 	return ads, err
 }
+
+func redisSetAd(key string, ads []model.Result) error {
+	data, err := json.Marshal(ads)
+
+	if err != nil {
+		return err
+	}
+	return redisClient.Set(context.Background(), key, data, 0) // Consider setting a suitable expiration time
+}
+func redisGetAd(key string) ([]model.Result, error) {
+	result, err := redisClient.Get(context.Background(), key)
+	// fmt.Println("get error", err)
+	if result == "" {
+		// fmt.Println("leave nil")
+		return nil, err // Key not found in cache
+
+	} else if err != nil {
+		// fmt.Println("leave != nil")
+
+		return nil, err
+	}
+	// fmt.Println(" success get res")
+	var ads []model.Result
+	if err := json.Unmarshal([]byte(result), &ads); err != nil {
+		return nil, err
+	}
+	// fmt.Println(key, "get ", ads)
+
+	return ads, nil
+}
+
+// /
+func getSearchString(condition model.Search_Condition) string {
+	return fmt.Sprintf("%d_%s_%s_%s", condition.Age, condition.Gender, condition.Country, condition.Platform)
+}
+
+func find_adByredis(condition model.Search_Condition) ([]model.Result, error) {
+	key := getSearchString(condition)
+	ads, err := redisGetAd(key)
+	if err != nil {
+		return nil, err
+	}
+	return ads, nil
+	// redisClient.S
+
+}
+
+// Package  ads
+
+// FunctionName explains the function's purpose and behavior.
+//
+// Args:
+//   * param1 model.Search_Condition - input  condition
+//   * param2 (type) - Description of the second parameter with type information.
+//
+// Returns:
+//
+//   * []model.Result
+//   * error
+//
+//
+
 func Find_ad(condition model.Search_Condition) ([]model.Result, error) {
+
 	var (
 		err error
 		ads []model.Result
 	)
-	ads, err = find_adBysql(condition)
+	ads, err = find_adByredis(condition)
 	if err != nil {
 
 		return nil, err
 	}
+	if ads == nil {
+		fmt.Println("redis fail")
+		ads, err = find_adBysql(condition)
+		if err != nil {
+
+			return nil, err
+		}
+	} else {
+		fmt.Println("redis success")
+	}
+	// fmt.Println(ads)
 	return getSlice(ads, condition.Limit, condition.Offset), err
 
 }
