@@ -46,7 +46,7 @@ func CreateAd(c *gin.Context) {
 	// ...
 	// controllers.Create_condition(ad.Conditions[0], 3)
 
-	c.JSON(http.StatusCreated, ad)
+	c.Status(http.StatusCreated)
 }
 
 // List Ads handler
