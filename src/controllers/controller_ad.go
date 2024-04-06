@@ -89,12 +89,12 @@ func Create_condition(condition model.Condition, adId int) error {
 		genderClause = get_clause(condition.Gender)
 	}()
 
-	// wg.Wait() // Wait for all goroutines to finish fetching data
+	wg.Wait() // Wait for all goroutines to finish fetching data
 
 	// platformClause = get_clause(condition.Platform)
 	// genderClause = get_clause(condition.Gender)
 	// countryClause = get_clause(condition.Country)
-
+	fmt.Println(genderClause, countryClause, platformClause)
 	sql_query := `INSERT INTO AdConditions (ad_id, condition_id)
 		SELECT ?, c.id
 	FROM Conditions c
@@ -116,11 +116,9 @@ func Create_condition(condition model.Condition, adId int) error {
 	return nil
 }
 func Find_ad(condition model.Search_Condition) ([]model.Result, error) {
-	// now := time.Now() // Get current time
+
 	num_param := 0
 	params := []interface{}{} // Initial parameter
-
-	// ... (rest of the code for building parameters similar to the previous response)
 
 	whereClause := ("WHERE a.start_at <= NOW() AND a.end_at >= NOW() ") // Initial WHERE clause
 	typeClause := "AND ("
@@ -180,7 +178,8 @@ func Find_ad(condition model.Search_Condition) ([]model.Result, error) {
 		typeClause += ")"
 		// fmt.Println("type \n", typeClause)
 		whereClause += typeClause
-		sql_query += whereClause + "GROUP BY ad_id " + "HAVING COUNT(*) = ?;" // Adjust for number of conditions
+		sql_query += whereClause + `GROUP BY ad_id 
+		HAVING COUNT(*) = ?` // Adjust for number of conditions
 
 		params = append(params, num_param)
 
@@ -188,18 +187,19 @@ func Find_ad(condition model.Search_Condition) ([]model.Result, error) {
 
 		sql_query += whereClause
 	}
+	//order by asc
+	sql_query += ` ORDER BY a.end_at asc`
 
-	// sql_query += "order by end_at asc"
+	// end of sql_query
+	sql_query += ";"
 	// sql_query = `
 
 	// select * from Ads;
 	// `
-	// fmt.Println(sql_query)
-	// fmt.Println(params...)
+	fmt.Println(sql_query)
+	fmt.Println(params...)
 
 	var ads []model.Result
-	// err := Db.Exec("SELECT a.title,a.end_at" +
-	// 	" FROM Ads a ").Scan(&ads).Error
 
 	err := Db.Raw(sql_query, params...).Scan(&ads).Error
 	if err != nil {
