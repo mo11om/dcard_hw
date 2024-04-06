@@ -62,19 +62,18 @@ func ListAds(c *gin.Context) {
 	platform := c.Query("platform")
 
 	offset, err := strconv.Atoi(c.Query("offset"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "limit must be num or not in 1-100"})
+
+	}
 	if err != nil || offset < 1 || offset > 100 {
 		offset = 5
-	} else {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "offset must be num or not in 1-100"})
-		return
 	}
 	limit, err := strconv.Atoi(c.Query("limit"))
 	if err != nil || limit < 1 || limit > 100 {
 		limit = 5
-	} else {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "limit must be num or not in 1-100"})
-
 	}
+
 	//fetch params into data structure
 	serach_condition.Age = age
 	serach_condition.Country = country
