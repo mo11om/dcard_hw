@@ -3,6 +3,7 @@ package controllers
 import (
 	"api/src/model"
 	"fmt"
+	"sync"
 )
 
 // Database connection (replace with your actual connection logic)
@@ -30,6 +31,7 @@ func Create_ad(ad model.Ad) error {
 			return err
 		}
 	} else {
+		fmt.Println(ad)
 		err := Db.Exec("INSERT INTO Ads (title, start_at, end_at ,min_age,max_age) VALUES (?, ?, ?,?,?)",
 			ad.Title, ad.StartAt, ad.EndAt, ad.Conditions[0].AgeStart, ad.Conditions[0].AgeEnd).Error
 		if err != nil {
@@ -62,10 +64,36 @@ func get_clause(data []string) string {
 	return Clause
 }
 func Create_condition(condition model.Condition, adId int) error {
-	countryClause := get_clause(condition.Country)
 
-	platformClause := get_clause(condition.Platform)
-	genderClause := get_clause(condition.Gender)
+	var (
+		err                                         error
+		countryClause, platformClause, genderClause string
+		wg                                          sync.WaitGroup
+	)
+
+	wg.Add(3)
+
+	// Execute get_clause concurrently for faster data fetching
+	go func() {
+		defer wg.Done()
+		countryClause = get_clause(condition.Country)
+	}()
+
+	go func() {
+		defer wg.Done()
+		platformClause = get_clause(condition.Platform)
+	}()
+
+	go func() {
+		defer wg.Done()
+		genderClause = get_clause(condition.Gender)
+	}()
+
+	// wg.Wait() // Wait for all goroutines to finish fetching data
+
+	// platformClause = get_clause(condition.Platform)
+	// genderClause = get_clause(condition.Gender)
+	// countryClause = get_clause(condition.Country)
 
 	sql_query := `INSERT INTO AdConditions (ad_id, condition_id)
 		SELECT ?, c.id
@@ -79,8 +107,8 @@ func Create_condition(condition model.Condition, adId int) error {
 	);`
 
 	fmt.Println("Create condition")
-	fmt.Println(sql_query)
-	err := Db.Exec(sql_query, adId).Error
+	// fmt.Println(sql_query)
+	err = Db.Exec(sql_query, adId).Error
 	if err != nil {
 		return err
 	}
@@ -160,18 +188,20 @@ func Find_ad(condition model.Search_Condition) ([]model.Result, error) {
 
 		sql_query += whereClause
 	}
+
+	// sql_query += "order by end_at asc"
 	// sql_query = `
 
 	// select * from Ads;
 	// `
-	fmt.Println(sql_query)
-	fmt.Println(params...)
+	// fmt.Println(sql_query)
+	// fmt.Println(params...)
 
 	var ads []model.Result
 	// err := Db.Exec("SELECT a.title,a.end_at" +
 	// 	" FROM Ads a ").Scan(&ads).Error
 
-	err := Db.Exec(sql_query, params...).Scan(&ads).Error
+	err := Db.Raw(sql_query, params...).Scan(&ads).Error
 	if err != nil {
 
 		return nil, err
