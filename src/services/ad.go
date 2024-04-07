@@ -14,6 +14,7 @@ import (
 
 // Create Ad handler
 func CreateAd(c *gin.Context) {
+	// Bind incoming request body to an Ad struct
 	var ad model.Ad
 	if err := c.ShouldBindBodyWith(&ad, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -38,20 +39,28 @@ func CreateAd(c *gin.Context) {
 		return
 	}
 
-	// Save ad to database (replace with your actual logic)
+	// Save ad to database
+	// Save conditions to database
 	// ...
-	controllers.Create_ad(ad)
+	if ad.Conditions[0].Country == nil {
+		ad.Conditions[0].Country = []string{"ALL"}
+	}
+	if ad.Conditions[0].Gender == nil {
+		ad.Conditions[0].Gender = model.All_gender
+	}
+	if ad.Conditions[0].Platform == nil {
+		ad.Conditions[0].Platform = model.All_platform
+	}
+	fmt.Println(ad)
 
-	// Save conditions to database (replace with your actual logic)
-	// ...
-	// controllers.Create_condition(ad.Conditions[0], 3)
+	controllers.Create_ad(ad)
 
 	c.Status(http.StatusCreated)
 }
 
-// List Ads handler
+// / ListAds handles listing ads based on search filters and pagination.
 func ListAds(c *gin.Context) {
-	//check
+	// Extract query parameters for filtering and pagination
 	var serach_condition model.Search_Condition
 	age, err := strconv.Atoi(c.Query("age"))
 	if err != nil {
@@ -60,12 +69,9 @@ func ListAds(c *gin.Context) {
 	gender := c.Query("gender")
 	country := c.Query("country")
 	platform := c.Query("platform")
-
+	// Validate offset and limit parameters (ensure values are within range)
 	offset, err := strconv.Atoi(c.Query("offset"))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "limit must be num or not in 1-100"})
 
-	}
 	if err != nil || offset < 1 || offset > 100 {
 		offset = 5
 	}
@@ -74,7 +80,7 @@ func ListAds(c *gin.Context) {
 		limit = 5
 	}
 
-	//fetch params into data structure
+	// Populate search condition struct with extracted parameters
 	serach_condition.Age = age
 	serach_condition.Country = country
 	serach_condition.Gender = gender

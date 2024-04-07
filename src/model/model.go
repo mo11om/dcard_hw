@@ -39,3 +39,6 @@ type Result struct {
 	Title string    `json:"title" gorm:"title"`
 	EndAt time.Time `json:"endAt" gorm:"end_at"`
 }
+
+var All_platform = []string{"android", "ios", "web"}
+var All_gender = []string{"M", "F"}

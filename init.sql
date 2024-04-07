@@ -34,6 +34,7 @@ INSERT INTO Conditions (type, value) VALUES ('gender', 'M');
 INSERT INTO Conditions (type, value) VALUES ('gender', 'F');
 
 -- Insert country conditions
+INSERT INTO Conditions (type, value) VALUES ('country', 'ALL');
 INSERT INTO Conditions (type, value) VALUES ('country', 'TW');
 INSERT INTO Conditions (type, value) VALUES ('country', 'JP');
 

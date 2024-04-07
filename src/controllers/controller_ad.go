@@ -175,7 +175,7 @@ func find_adBysql(condition model.Search_Condition) ([]model.Result, error) {
 		// print("how much", len(condition.Country)*2-1)
 		// countryPlaceholders := strings.Repeat("?,", len(condition.Country))[:len(condition.Country)*2-1]
 		// whereClause += fmt.Sprintf("OR (c.type = 'country' AND c.value IN (%s)) ", countryPlaceholders)
-		typeClause += "OR (c.type = 'country' AND c.value = (?)) "
+		typeClause += "OR (c.type = 'country' AND (c.value = (? ) or c.value ='ALL')) "
 		params = append(params, condition.Country)
 
 		// for _, country := range condition.Country {
