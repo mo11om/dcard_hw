@@ -14,7 +14,7 @@ OR (c.type = 'country' AND c.value = ('TW'))
 OR (c.type = 'platform' AND c.value = ('ios')) )
 
 group by ad_id 
-having  COUNT(*)>3
+having  COUNT(*)=3
 ORDER by end_at ASC
 
 
