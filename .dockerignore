@@ -1,0 +1,24 @@
+# Ignore common build artifacts
+*.a
+*.o
+*.so
+
+# Ignore IDE or editor configuration files
+.idea/
+.vscode/
+.DS_Store
+
+# Ignore test coverage reports
+coverage/
+
+# Ignore temporary Go files
+*.tmp
+
+# Ignore environment variable files (consider using a .env file for sensitive information)
+.env*
+
+# Ignore vendor directory if using dependency vendoring
+vendor/
+
+# Ignore cache directories
+go/pkg/
