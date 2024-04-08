@@ -79,41 +79,6 @@ API 設計
 
 **注意**：請將 `dcard` 替換為您設定的資料庫使用者名稱，並將 `i_love_dcard` 替換為您設定的資料庫使用者密碼。
 
-### 啟動主程式
-
-**1. 安裝 Go**
-
-在遠端電腦上安裝 Go，可從官方網站下載安裝程式：[https://go.dev/dl/](https://go.dev/dl/)。
-
-**2. 傳輸 Go 專案**
-
-**使用 Git:**
-
-- 若您的專案使用 Git 進行版本控制，可使用以下指令將專案倉庫複製到遠端電腦：
-
-`git clone https://your-username@github.com/your-organization/your-project-name.git`
-
-**3. 建置和執行 Go API**
-
-`cd dcard_hw`
-
-**建置 Go API:**
-
-- 使用以下指令建置 Go 二進位檔：
-
-`go build -o main .  # 若您的二進位檔名不同，請用實際名稱替換「main」`
-
- 
-
- 
-
-**執行 Go API:**
-
-- 執行以下指令啟動 API 伺服器：
-
-`./main  # 請用實際的路徑和二進位檔名替換「./main」`
-
- 
 
 ## **API**
 
