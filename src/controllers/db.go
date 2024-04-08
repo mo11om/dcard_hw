@@ -9,7 +9,7 @@ import (
 
 var Db *gorm.DB
 var Err error
-var connectionString string = "root:password@tcp(localhost:3306)/data?charset=utf8mb4&parseTime=True"
+var connectionString string = "dcard:i_love_dcard@tcp(db:3306)/data?charset=utf8mb4&parseTime=True"
 
 func DBconnect() error {
 	// 参考 https://github.com/go-sql-driver/mysql#dsn-data-source-name 获取详情

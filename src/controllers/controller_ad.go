@@ -13,7 +13,7 @@ var redisClient *Client
 // init redis client
 func Init_redis() error {
 	cfg := &Config{
-		Addr:     "localhost:6379",
+		Addr:     "redis:6379",
 		Password: "",
 		DB:       0,
 	}

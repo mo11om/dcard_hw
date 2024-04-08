@@ -26,12 +26,12 @@ services:
 
     ports:
       - "6379:6379"
-  # go-api:
-  #   build: .
-  #   restart: unless-stopped  # Restart container on failures
+  go-api:
+    build: .
+    restart: unless-stopped  # Restart container on failures
 
-  #   ports:
-  #     - "8080:8080"  # Map container port 8080 to host port 8080 (adjust as needed)
+    ports:
+      - "8080:8080"  # Map container port 8080 to host port 8080 (adjust as needed)
   #   networks:
   #     # - default  # Connect to the default Docker network
       
